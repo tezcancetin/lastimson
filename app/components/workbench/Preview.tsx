@@ -20,15 +20,13 @@ export const Preview = memo(() => {
     if (!activePreview) {
       setUrl('');
       setIframeUrl(undefined);
-
       return;
     }
 
     const { baseUrl } = activePreview;
-
     setUrl(baseUrl);
     setIframeUrl(baseUrl);
-  }, [activePreview, iframeUrl]);
+  }, [activePreview]);
 
   const validateUrl = useCallback(
     (value: string) => {
@@ -60,16 +58,39 @@ export const Preview = memo(() => {
   useEffect(() => {
     if (previews.length > 1 && !hasSelectedPreview.current) {
       const minPortIndex = previews.reduce(findMinPortIndex, 0);
-
       setActivePreviewIndex(minPortIndex);
     }
-  }, [previews]);
+  }, [previews, findMinPortIndex]);
 
   const reloadPreview = () => {
     if (iframeRef.current) {
       iframeRef.current.src = iframeRef.current.src;
     }
   };
+
+  // Eğer preview yoksa placeholder göster
+  if (previews.length === 0) {
+    return (
+      <div className="w-full h-full flex flex-col">
+        <div className="bg-bolt-elements-background-depth-2 p-2 flex items-center gap-1.5">
+          <div className="flex items-center gap-1 flex-grow bg-bolt-elements-preview-addressBar-background border border-bolt-elements-borderColor text-bolt-elements-preview-addressBar-text rounded-full px-3 py-1 text-sm">
+            <span>Önizleme bekleniyor...</span>
+          </div>
+        </div>
+        <div className="flex-1 border-t border-bolt-elements-borderColor">
+          <div className="flex w-full h-full justify-center items-center bg-white flex-col gap-4">
+            <div className="text-gray-500 text-lg">🚀</div>
+            <div className="text-gray-600 text-center">
+              <div className="font-medium mb-2">Önizleme Hazırlanıyor</div>
+              <div className="text-sm">
+                Uygulama çalıştırıldığında önizleme burada görünecek
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -78,10 +99,7 @@ export const Preview = memo(() => {
       )}
       <div className="bg-bolt-elements-background-depth-2 p-2 flex items-center gap-1.5">
         <IconButton icon="i-ph:arrow-clockwise" onClick={reloadPreview} />
-        <div
-          className="flex items-center gap-1 flex-grow bg-bolt-elements-preview-addressBar-background border border-bolt-elements-borderColor text-bolt-elements-preview-addressBar-text rounded-full px-3 py-1 text-sm hover:bg-bolt-elements-preview-addressBar-backgroundHover hover:focus-within:bg-bolt-elements-preview-addressBar-backgroundActive focus-within:bg-bolt-elements-preview-addressBar-backgroundActive
-        focus-within-border-bolt-elements-borderColorActive focus-within:text-bolt-elements-preview-addressBar-textActive"
-        >
+        <div className="flex items-center gap-1 flex-grow bg-bolt-elements-preview-addressBar-background border border-bolt-elements-borderColor text-bolt-elements-preview-addressBar-text rounded-full px-3 py-1 text-sm hover:bg-bolt-elements-preview-addressBar-backgroundHover hover:focus-within:bg-bolt-elements-preview-addressBar-backgroundActive focus-within:bg-bolt-elements-preview-addressBar-backgroundActive focus-within-border-bolt-elements-borderColorActive focus-within:text-bolt-elements-preview-addressBar-textActive">
           <input
             ref={inputRef}
             className="w-full bg-transparent outline-none"
@@ -113,10 +131,23 @@ export const Preview = memo(() => {
         )}
       </div>
       <div className="flex-1 border-t border-bolt-elements-borderColor">
-        {activePreview ? (
-          <iframe ref={iframeRef} className="border-none w-full h-full bg-white" src={iframeUrl} />
+        {activePreview && iframeUrl ? (
+          <iframe 
+            ref={iframeRef} 
+            className="border-none w-full h-full bg-white" 
+            src={iframeUrl}
+            title="Application Preview"
+          />
         ) : (
-          <div className="flex w-full h-full justify-center items-center bg-white">No preview available</div>
+          <div className="flex w-full h-full justify-center items-center bg-white flex-col gap-4">
+            <div className="text-gray-500 text-lg">⏳</div>
+            <div className="text-gray-600 text-center">
+              <div className="font-medium mb-2">Önizleme Yükleniyor</div>
+              <div className="text-sm">
+                Lütfen bekleyin, uygulama başlatılıyor...
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>

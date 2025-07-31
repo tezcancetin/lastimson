@@ -33,6 +33,11 @@ export function HeaderActionButtons({}: HeaderActionButtonsProps) {
               chatStore.setKey('showChat', true);
             }
 
+            // Workbench'i açarken preview'a geç
+            if (!showWorkbench) {
+              workbenchStore.currentView.set('preview');
+            }
+
             workbenchStore.showWorkbench.set(!showWorkbench);
           }}
         >

@@ -23,12 +23,14 @@ export class PreviewsStore {
     const webcontainer = await this.#webcontainer;
 
     webcontainer.on('port', (port, type, url) => {
+      console.log(`Port event: ${port}, type: ${type}, url: ${url}`);
+      
       let previewInfo = this.#availablePreviews.get(port);
 
       if (type === 'close' && previewInfo) {
         this.#availablePreviews.delete(port);
         this.previews.set(this.previews.get().filter((preview) => preview.port !== port));
-
+        console.log(`Port ${port} closed`);
         return;
       }
 
@@ -38,12 +40,17 @@ export class PreviewsStore {
         previewInfo = { port, ready: type === 'open', baseUrl: url };
         this.#availablePreviews.set(port, previewInfo);
         previews.push(previewInfo);
+        console.log(`New preview added: port ${port}, ready: ${type === 'open'}`);
       }
 
       previewInfo.ready = type === 'open';
       previewInfo.baseUrl = url;
 
       this.previews.set([...previews]);
+      
+      if (type === 'open') {
+        console.log(`Preview ready on port ${port}: ${url}`);
+      }
     });
   }
 }

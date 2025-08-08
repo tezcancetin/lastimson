@@ -137,6 +137,13 @@ export const Preview = memo(() => {
             className="border-none w-full h-full bg-white" 
             src={iframeUrl}
             title="Application Preview"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads"
+            onLoad={() => {
+              console.log('Preview loaded:', iframeUrl);
+            }}
+            onError={(e) => {
+              console.error('Preview error:', e);
+            }}
           />
         ) : (
           <div className="flex w-full h-full justify-center items-center bg-white flex-col gap-4">

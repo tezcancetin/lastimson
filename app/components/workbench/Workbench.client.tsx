@@ -75,9 +75,12 @@ export const Workbench = memo(({ chatStarted, isStreaming }: WorkspaceProps) => 
   }, [chatStarted, showWorkbench]);
 
   useEffect(() => {
-    // Preview varsa otomatik olarak preview'a geç
+    // Preview varsa otomatik olarak preview'a geç, ama sadece preview hazır olduğunda
     if (hasPreview && selectedView !== 'preview') {
-      setSelectedView('preview');
+      // Küçük bir gecikme ekleyerek preview'ın tam olarak hazır olmasını bekle
+      setTimeout(() => {
+        setSelectedView('preview');
+      }, 500);
     }
   }, [hasPreview, selectedView]);
 
